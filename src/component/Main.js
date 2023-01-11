@@ -1,20 +1,28 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
-import memesData from "../memesData";
 
 const Main = () => {
-
-
     const [meme, setMeme] = useState({
         topText: "",
         bottomText: "",
         randomImg: "https://i.imgflip.com/30b1gx.jpg",
     })
 
+    const [allMemes, setAllMemes] = useState({})
+
+    useEffect(()=>{
+        const getAllMemes =  async ()=>{
+            const res = await fetch("https://api.imgflip.com/get_memes")
+            const data = await res.json()
+            setAllMemes(data)
+        }
+        getAllMemes()
+    }, [])
+    
     const generateMeme = () =>{
-        const memesArr = memesData.data.memes
+        const memesArr = allMemes.data.memes
         const randomArr = Math.floor(Math.random() * memesArr.length)
-        setMeme( prevMeme => {
+        setMeme( () => {
             return(
                 {
                 topText: "",
@@ -58,7 +66,7 @@ const Main = () => {
                 <button onClick={generateMeme} className=" bg-gradient-to-r from-purple-900 to-purple-500 h-10 rounded-md text-white w-full sm:w-96">Generate new meme image</button>
 
                 <div className=" w-full sm:w-96 relative text-center">
-                    <img className=" object-cover m-auto" src={meme.randomImg} alt="an image of a meme" />
+                    <img className=" object-cover m-auto" src={meme.randomImg} alt="a meme" />
                     <h1 style={{textShadow: "0px 0px 1rem black"}} className=" absolute uppercase top-4 w-full text-center font-bold text-white text-xl">{meme.topText}</h1>
                     <h1 style={{textShadow: "0px 0px 1rem black"}} className=" absolute uppercase bottom-4 w-full text-center font-bold text-white text-xl">{meme.bottomText}</h1>
                 </div>
